@@ -1,9 +1,12 @@
 package controller;
 
 import model.State;
+import model.action.Action;
+import model.action.DrawAction;
 import model.interfaces.IApplicationState;
 import model.interfaces.IStateListener;
 import model.persistence.ApplicationState;
+import model.shape.GeometricShape;
 import util.Util;
 import view.EventName;
 import view.gui.Gui;
@@ -39,9 +42,39 @@ public class JPaintController implements IJPaintController, IStateListener {
     }
 
     private void undo() {
+        if (paintCanvas.actions.isEmpty()) {
+            return;
+        }
+        Action action = paintCanvas.actions.get(paintCanvas.actions.size() - 1);
+        switch (action.getActionName()) {
+            case DRAW: {
+                DrawAction drawAction = (DrawAction) action;
+                GeometricShape shape = drawAction.getDrawnShape();
+                paintCanvas.actions.remove(action);
+                paintCanvas.shapes.remove(shape);
+                paintCanvas.undoneActions.add(action);
+                break;
+            }
+        }
+        paintCanvas.repaint();
     }
 
     private void redo() {
+        if (paintCanvas.undoneActions.isEmpty()) {
+            return;
+        }
+        Action action = paintCanvas.undoneActions.get(paintCanvas.undoneActions.size() - 1);
+        switch (action.getActionName()) {
+            case DRAW: {
+                DrawAction drawAction = (DrawAction) action;
+                GeometricShape shape = drawAction.getDrawnShape();
+                paintCanvas.shapes.add(shape);
+                paintCanvas.undoneActions.remove(action);
+                paintCanvas.actions.add(action);
+                break;
+            }
+        }
+        paintCanvas.repaint();
     }
 
     private void copy() {
