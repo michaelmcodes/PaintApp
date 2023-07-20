@@ -3,6 +3,7 @@ package controller;
 import model.State;
 import model.action.Action;
 import model.action.DrawAction;
+import model.action.MoveAction;
 import model.interfaces.IApplicationState;
 import model.interfaces.IStateListener;
 import model.persistence.ApplicationState;
@@ -12,6 +13,8 @@ import view.EventName;
 import view.gui.Gui;
 import view.gui.PaintCanvas;
 import view.interfaces.IUiModule;
+
+import java.awt.*;
 
 public class JPaintController implements IJPaintController, IStateListener {
     private final IUiModule uiModule;
@@ -55,8 +58,25 @@ public class JPaintController implements IJPaintController, IStateListener {
                 paintCanvas.undoneActions.add(action);
                 break;
             }
+            case MOVE: {
+                MoveAction moveAction = (MoveAction) action;
+                for (GeometricShape movedShape : moveAction.getMovedShapes()) {
+                    paintCanvas.shapes.remove(movedShape);
+                    Point startingPoint = movedShape.getStartPoint();
+                    Point endingPoint = movedShape.getEndPoint();
+                    Point newStartPoint = new Point(startingPoint.x - moveAction.getMovedPoint().x, startingPoint.y - moveAction.getMovedPoint().y);
+                    Point newEndPoint = new Point(endingPoint.x - moveAction.getMovedPoint().x, endingPoint.y - moveAction.getMovedPoint().y);
+                    movedShape.setStartPoint(newStartPoint);
+                    movedShape.setEndPoint(newEndPoint);
+                    paintCanvas.shapes.add(movedShape);
+                }
+                paintCanvas.actions.remove(action);
+                paintCanvas.undoneActions.add(action);
+                break;
+            }
         }
         paintCanvas.repaint();
+
     }
 
     private void redo() {
@@ -69,6 +89,22 @@ public class JPaintController implements IJPaintController, IStateListener {
                 DrawAction drawAction = (DrawAction) action;
                 GeometricShape shape = drawAction.getDrawnShape();
                 paintCanvas.shapes.add(shape);
+                paintCanvas.undoneActions.remove(action);
+                paintCanvas.actions.add(action);
+                break;
+            }
+            case MOVE: {
+                MoveAction moveAction = (MoveAction) action;
+                for (GeometricShape movedShape : moveAction.getMovedShapes()) {
+                    paintCanvas.shapes.remove(movedShape);
+                    Point startingPoint = movedShape.getStartPoint();
+                    Point endingPoint = movedShape.getEndPoint();
+                    Point newStartPoint = new Point(startingPoint.x + moveAction.getMovedPoint().x, startingPoint.y + moveAction.getMovedPoint().y);
+                    Point newEndPoint = new Point(endingPoint.x + moveAction.getMovedPoint().x, endingPoint.y + moveAction.getMovedPoint().y);
+                    movedShape.setStartPoint(newStartPoint);
+                    movedShape.setEndPoint(newEndPoint);
+                    paintCanvas.shapes.add(movedShape);
+                }
                 paintCanvas.undoneActions.remove(action);
                 paintCanvas.actions.add(action);
                 break;

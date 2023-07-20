@@ -7,9 +7,9 @@ import util.Util;
 
 import java.awt.*;
 
-public class Rectangle extends GeometricShape {
+public class Ellipse extends GeometricShape {
 
-    public Rectangle(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType, boolean isSelected) {
+    public Ellipse(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType, boolean isSelected) {
         super(startPoint, endPoint, backgroundColor, strokeColor, shapeShadingType, isSelected);
     }
 
@@ -24,33 +24,33 @@ public class Rectangle extends GeometricShape {
         switch (getShapeShadingType()) {
             case FILLED_IN: {
                 g.setColor(Util.getColorFromShapeColor(getBackgroundColor()));
-                g.fillRect(px, py, pw, ph);
+                g.fillOval(px, py, pw, ph);
 
                 if (isSelected) {
-                    drawSelectedRectangle(g, px, py, pw, ph);
+                    drawSelectedEllipse(g, px, py, pw, ph);
                 }
                 break;
             }
             case OUTLINE: {
                 g.setStroke(new BasicStroke(5));
                 g.setColor(Util.getColorFromShapeColor(getBackgroundColor()));
-                g.drawRect(px, py, pw, ph);
+                g.drawOval(px, py, pw, ph);
 
                 if (isSelected) {
-                    drawSelectedRectangle(g, px, py, pw, ph);
+                    drawSelectedEllipse(g, px, py, pw, ph);
                 }
                 break;
             }
             case OUTLINE_AND_FILLED_IN: {
                 g.setColor(Util.getColorFromShapeColor(getBackgroundColor()));
-                g.fillRect(px, py, pw, ph);
+                g.fillOval(px, py, pw, ph);
 
                 g.setStroke(new BasicStroke(5));
                 g.setColor(Util.getColorFromShapeColor(getStrokeColor()));
-                g.drawRect(px, py, pw, ph);
+                g.drawOval(px, py, pw, ph);
 
                 if (isSelected) {
-                    drawSelectedRectangle(g, px, py, pw, ph);
+                    drawSelectedEllipse(g, px, py, pw, ph);
                 }
                 break;
             }
@@ -59,7 +59,6 @@ public class Rectangle extends GeometricShape {
 
     @Override
     public boolean select(Point selectedPoint) {
-
         int x1 = this.getStartPoint().x, x2 = this.getEndPoint().x;
         int y1 = this.getStartPoint().y, y2 = this.getEndPoint().y;
 
@@ -67,14 +66,13 @@ public class Rectangle extends GeometricShape {
         return r.contains(selectedPoint.x, selectedPoint.y);
     }
 
-    private void drawSelectedRectangle(Graphics2D g, int px, int py, int pw, int ph) {
+    private void drawSelectedEllipse(Graphics2D g, int px, int py, int pw, int ph) {
         int padding = Constants.SELECTED_SHAPE_STROKE_PADDING;
 
         Stroke stroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1, new float[]{9}, 0);
         g.setStroke(stroke);
         g.setColor(Constants.SELECTED_SHAPE_STROKE_COLOR);
-        g.drawRect(px - padding, py - padding, pw + 2 * padding, ph + 2 * padding);
+        g.drawOval(px - padding, py - padding, pw + 2 * padding, ph + 2 * padding);
 
     }
-
 }
