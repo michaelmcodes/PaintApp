@@ -10,16 +10,19 @@ import model.action.MoveAction;
 import model.shape.*;
 import model.shape.Rectangle;
 import util.Util;
+import view.handler.MouseListenerHandler;
+import view.handler.MouseMotionListenerHandler;
 
 import javax.swing.JComponent;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class PaintCanvas extends JComponent implements MouseListener, MouseMotionListener {
+public class PaintCanvas extends JComponent {
 
     private final ShapeCreator shapeCreator = new ShapeCreator();
 
@@ -35,8 +38,8 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
     private Point initialPoint;
 
     public PaintCanvas() {
-        addMouseListener(this);
-        addMouseMotionListener(this);
+        addMouseListener(new MouseListenerHandler(this));
+        addMouseMotionListener(new MouseMotionListenerHandler(this));
     }
 
     public void setState(State state) {
@@ -112,16 +115,21 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
 
     }
 
+    public void handleMouseReleased(Point point) {
 
-    @Override
-    public void mouseClicked(MouseEvent mouseEvent) {
+        if (state.getMouseMode() == MouseMode.MOVE) {
+            initMovingShapes();
+            int diffX = point.x - initialPoint.x;
+            int diffY = point.y - initialPoint.y;
+            ArrayList<AbstractShape> tempShapes = new ArrayList<>();
+            tempShapes.addAll(tempMovedShapesArraylist);
+            MoveAction moveAction = new MoveAction(tempShapes, new Point(diffX, diffY));
+            actions.add(moveAction);
+            tempMovedShapesArraylist.clear();
+        }
     }
 
-    @Override
-    public void mousePressed(MouseEvent mouseEvent) {
-        Point point = new Point();
-        point.setLocation(mouseEvent.getX(), mouseEvent.getY());
-
+    public void handleMousePressed(Point point) {
         switch (state.getMouseMode()) {
             case DRAW: {
                 unselectAllTheShapes();
@@ -145,39 +153,10 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
         repaint();
     }
 
-    @Override
-    public void mouseReleased(MouseEvent mouseEvent) {
-        Point point = new Point();
-        point.setLocation(mouseEvent.getX(), mouseEvent.getY());
-
-        if (state.getMouseMode() == MouseMode.MOVE) {
-            initMovingShapes();
-            int diffX = point.x - initialPoint.x;
-            int diffY = point.y - initialPoint.y;
-            ArrayList<AbstractShape> tempShapes = new ArrayList<>();
-            tempShapes.addAll(tempMovedShapesArraylist);
-            MoveAction moveAction = new MoveAction(tempShapes, new Point(diffX, diffY));
-            actions.add(moveAction);
-            tempMovedShapesArraylist.clear();
-        }
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent mouseEvent) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent mouseEvent) {
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent mouseEvent) {
-        Point point = new Point();
-        point.setLocation(mouseEvent.getX(), mouseEvent.getY());
-
+    public void handleMouseDragged(Point point) {
         switch (state.getMouseMode()) {
             case DRAW: {
-                if (shapes.size() > 0) {
+                if (!shapes.isEmpty()) {
                     shapes.get(shapes.size() - 1).setEndPoint(point);
                 }
                 break;
@@ -195,9 +174,5 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
             }
         }
         repaint();
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent mouseEvent) {
     }
 }
