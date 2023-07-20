@@ -5,7 +5,7 @@ import model.ShapeShadingType;
 
 import java.awt.*;
 
-public abstract class GeometricShape {
+public abstract class AbstractShape {
 
     private Point startPoint;
     private Point endPoint;
@@ -14,7 +14,7 @@ public abstract class GeometricShape {
     private ShapeShadingType shapeShadingType;
     public boolean isSelected;
 
-    public GeometricShape(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType, boolean isSelected) {
+    public AbstractShape(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType, boolean isSelected) {
         this.startPoint = startPoint;
         this.endPoint = endPoint;
         this.backgroundColor = backgroundColor;

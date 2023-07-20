@@ -7,7 +7,7 @@ import util.Util;
 
 import java.awt.*;
 
-public class Ellipse extends GeometricShape {
+public class Ellipse extends AbstractShape {
 
     public Ellipse(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType, boolean isSelected) {
         super(startPoint, endPoint, backgroundColor, strokeColor, shapeShadingType, isSelected);

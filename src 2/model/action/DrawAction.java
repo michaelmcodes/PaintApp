@@ -1,21 +1,21 @@
 package model.action;
 
-import model.shape.GeometricShape;
+import model.shape.AbstractShape;
 
 public class DrawAction extends Action {
 
-    private GeometricShape drawnShape;
+    private AbstractShape drawnShape;
 
-    public DrawAction(GeometricShape drawnShape) {
+    public DrawAction(AbstractShape drawnShape) {
         super(ActionName.DRAW);
         this.drawnShape = drawnShape;
     }
 
-    public void setDrawnShape(GeometricShape drawnShape) {
+    public void setDrawnShape(AbstractShape drawnShape) {
         this.drawnShape = drawnShape;
     }
 
-    public GeometricShape getDrawnShape() {
+    public AbstractShape getDrawnShape() {
         return drawnShape;
     }
 

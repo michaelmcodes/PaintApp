@@ -1,6 +1,8 @@
 package view.gui;
 
 import model.MouseMode;
+import model.ShapeCreator;
+import model.ShapeType;
 import model.State;
 import model.action.Action;
 import model.action.DrawAction;
@@ -19,12 +21,14 @@ import java.util.Iterator;
 
 public class PaintCanvas extends JComponent implements MouseListener, MouseMotionListener {
 
-    public ArrayList<GeometricShape> shapes = new ArrayList<>();
+    private final ShapeCreator shapeCreator = new ShapeCreator();
+
+    public ArrayList<AbstractShape> shapes = new ArrayList<>();
 
     public ArrayList<Action> undoneActions = new ArrayList<>();
     public ArrayList<Action> actions = new ArrayList<>();
 
-    private final ArrayList<GeometricShape> tempMovedShapesArraylist = new ArrayList<>();
+    private final ArrayList<AbstractShape> tempMovedShapesArraylist = new ArrayList<>();
 
     private State state = Util.getDefaultState();
     private Point currentMousePressedPoint;
@@ -43,10 +47,10 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
     public void paint(Graphics g) {
         Graphics2D graphics2d = (Graphics2D) g;
 
-        Iterator<GeometricShape> shapeIterator = shapes.iterator();
+        Iterator<AbstractShape> shapeIterator = shapes.iterator();
 
         while (shapeIterator.hasNext()) {
-            GeometricShape shape = shapeIterator.next();
+            AbstractShape shape = shapeIterator.next();
             if (shape instanceof Rectangle) {
                 ShapeMakerFacade shapeMakerFacade = new ShapeMakerFacade((Rectangle) shape);
                 shapeMakerFacade.drawRectangle(graphics2d);
@@ -63,7 +67,7 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
 
     private void setSelectedShapes(Point selectedPoint, boolean isDragging) {
         boolean isAnyShapeSelected = false;
-        for (GeometricShape shape : shapes) {
+        for (AbstractShape shape : shapes) {
             if (shape.select(selectedPoint)) {
                 shape.setSelected(true);
                 isAnyShapeSelected = true;
@@ -76,14 +80,14 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
     }
 
     private void unselectAllTheShapes() {
-        for (GeometricShape shape : shapes) {
+        for (AbstractShape shape : shapes) {
             shape.setSelected(false);
         }
         for (Action action : undoneActions) {
             switch (action.getActionName()) {
                 case DRAW:
                     DrawAction drawAction = (DrawAction) action;
-                    GeometricShape shape = drawAction.getDrawnShape();
+                    AbstractShape shape = drawAction.getDrawnShape();
                     shape.setSelected(false);
                     break;
             }
@@ -91,7 +95,7 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
     }
 
     private void initMovingShapes() {
-        for (GeometricShape shape : shapes) {
+        for (AbstractShape shape : shapes) {
             if (shape.isSelected) {
                 tempMovedShapesArraylist.add(shape);
             }
@@ -100,7 +104,7 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
     }
 
     private void moveSelectedShapes(int differenceInX, int differenceInY) {
-        for (GeometricShape shape : shapes) {
+        for (AbstractShape shape : shapes) {
             if (shape.isSelected) {
                 shape.move(new Point(differenceInX, differenceInY));
             }
@@ -121,29 +125,9 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
         switch (state.getMouseMode()) {
             case DRAW: {
                 unselectAllTheShapes();
-                switch (state.getShapeType()) {
-                    case RECTANGLE: {
-                        Rectangle rectangle = new Rectangle(point, point, state.getShapePrimaryColor(), state.getShapeSecondaryColor(), state.getShapeShadingType(), false);
-                        shapes.add(rectangle);
-
-                        actions.add(new DrawAction(rectangle));
-                        break;
-                    }
-                    case ELLIPSE: {
-                        Ellipse ellipse = new Ellipse(point, point, state.getShapePrimaryColor(), state.getShapeSecondaryColor(), state.getShapeShadingType(), false);
-                        shapes.add(ellipse);
-
-                        actions.add(new DrawAction(ellipse));
-                        break;
-                    }
-                    case TRIANGLE: {
-                        Triangle triangle = new Triangle(point, point, state.getShapePrimaryColor(), state.getShapeSecondaryColor(), state.getShapeShadingType(), false);
-                        shapes.add(triangle);
-
-                        actions.add(new DrawAction(triangle));
-                        break;
-                    }
-                }
+                AbstractShape shape = shapeCreator.createShape(state.getShapeType(), point, point, state.getShapePrimaryColor(), state.getShapeSecondaryColor(), state.getShapeShadingType(), false);
+                shapes.add(shape);
+                actions.add(new DrawAction(shape));
                 break;
             }
             case SELECT: {
@@ -170,7 +154,7 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
             initMovingShapes();
             int diffX = point.x - initialPoint.x;
             int diffY = point.y - initialPoint.y;
-            ArrayList<GeometricShape> tempShapes = new ArrayList<>();
+            ArrayList<AbstractShape> tempShapes = new ArrayList<>();
             tempShapes.addAll(tempMovedShapesArraylist);
             MoveAction moveAction = new MoveAction(tempShapes, new Point(diffX, diffY));
             actions.add(moveAction);

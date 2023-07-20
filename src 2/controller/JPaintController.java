@@ -7,8 +7,7 @@ import model.action.MoveAction;
 import model.interfaces.IApplicationState;
 import model.interfaces.IStateListener;
 import model.persistence.ApplicationState;
-import model.shape.GeometricShape;
-import util.Util;
+import model.shape.AbstractShape;
 import view.EventName;
 import view.gui.Gui;
 import view.gui.PaintCanvas;
@@ -52,7 +51,7 @@ public class JPaintController implements IJPaintController, IStateListener {
         switch (action.getActionName()) {
             case DRAW: {
                 DrawAction drawAction = (DrawAction) action;
-                GeometricShape shape = drawAction.getDrawnShape();
+                AbstractShape shape = drawAction.getDrawnShape();
                 paintCanvas.actions.remove(action);
                 paintCanvas.shapes.remove(shape);
                 paintCanvas.undoneActions.add(action);
@@ -60,7 +59,7 @@ public class JPaintController implements IJPaintController, IStateListener {
             }
             case MOVE: {
                 MoveAction moveAction = (MoveAction) action;
-                for (GeometricShape movedShape : moveAction.getMovedShapes()) {
+                for (AbstractShape movedShape : moveAction.getMovedShapes()) {
                     paintCanvas.shapes.remove(movedShape);
                     Point startingPoint = movedShape.getStartPoint();
                     Point endingPoint = movedShape.getEndPoint();
@@ -87,7 +86,7 @@ public class JPaintController implements IJPaintController, IStateListener {
         switch (action.getActionName()) {
             case DRAW: {
                 DrawAction drawAction = (DrawAction) action;
-                GeometricShape shape = drawAction.getDrawnShape();
+                AbstractShape shape = drawAction.getDrawnShape();
                 paintCanvas.shapes.add(shape);
                 paintCanvas.undoneActions.remove(action);
                 paintCanvas.actions.add(action);
@@ -95,7 +94,7 @@ public class JPaintController implements IJPaintController, IStateListener {
             }
             case MOVE: {
                 MoveAction moveAction = (MoveAction) action;
-                for (GeometricShape movedShape : moveAction.getMovedShapes()) {
+                for (AbstractShape movedShape : moveAction.getMovedShapes()) {
                     paintCanvas.shapes.remove(movedShape);
                     Point startingPoint = movedShape.getStartPoint();
                     Point endingPoint = movedShape.getEndPoint();

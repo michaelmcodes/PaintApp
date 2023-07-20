@@ -7,7 +7,7 @@ import util.Util;
 
 import java.awt.*;
 
-public class Rectangle extends GeometricShape {
+public class Rectangle extends AbstractShape {
 
     public Rectangle(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType, boolean isSelected) {
         super(startPoint, endPoint, backgroundColor, strokeColor, shapeShadingType, isSelected);

@@ -1,26 +1,26 @@
 package model.action;
 
-import model.shape.GeometricShape;
+import model.shape.AbstractShape;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 public class MoveAction extends Action {
 
-    private ArrayList<GeometricShape> movedShapes;
+    private ArrayList<AbstractShape> movedShapes;
     private Point movedPoint;
 
-    public MoveAction(ArrayList<GeometricShape> movedShapes, Point movedPoint) {
+    public MoveAction(ArrayList<AbstractShape> movedShapes, Point movedPoint) {
         super(ActionName.MOVE);
         this.movedShapes = movedShapes;
         this.movedPoint = movedPoint;
     }
 
-    public void setMovedShapes(ArrayList<GeometricShape> movedShapes) {
+    public void setMovedShapes(ArrayList<AbstractShape> movedShapes) {
         this.movedShapes = movedShapes;
     }
 
-    public ArrayList<GeometricShape> getMovedShapes() {
+    public ArrayList<AbstractShape> getMovedShapes() {
         return movedShapes;
     }
 
