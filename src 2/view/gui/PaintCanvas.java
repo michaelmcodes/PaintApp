@@ -102,15 +102,9 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
     private void moveSelectedShapes(int differenceInX, int differenceInY) {
         for (GeometricShape shape : shapes) {
             if (shape.isSelected) {
-                Point startingPoint = shape.getStartPoint();
-                Point endingPoint = shape.getEndPoint();
-                Point newStartPoint = new Point(startingPoint.x + differenceInX, startingPoint.y + differenceInY);
-                Point newEndPoint = new Point(endingPoint.x + differenceInX, endingPoint.y + differenceInY);
-                shape.setStartPoint(newStartPoint);
-                shape.setEndPoint(newEndPoint);
+                shape.move(new Point(differenceInX, differenceInY));
             }
         }
-
 
     }
 

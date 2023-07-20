@@ -67,6 +67,15 @@ public abstract class GeometricShape {
         return strokeColor;
     }
 
+    public void move(Point movedPoint) {
+        Point startingPoint = getStartPoint();
+        Point endingPoint = getEndPoint();
+        Point newStartPoint = new Point(startingPoint.x + movedPoint.x, startingPoint.y + movedPoint.y);
+        Point newEndPoint = new Point(endingPoint.x + movedPoint.x, endingPoint.y + movedPoint.y);
+        setStartPoint(newStartPoint);
+        setEndPoint(newEndPoint);
+    }
+
     public abstract void draw(Graphics2D graphics2D);
     public abstract boolean select(Point selectedPoint);
 }
