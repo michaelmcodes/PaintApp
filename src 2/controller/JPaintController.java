@@ -1,13 +1,16 @@
 package controller;
 
+import model.State;
 import model.interfaces.IApplicationState;
+import model.interfaces.IStateListener;
 import model.persistence.ApplicationState;
+import util.Util;
 import view.EventName;
 import view.gui.Gui;
 import view.gui.PaintCanvas;
 import view.interfaces.IUiModule;
 
-public class JPaintController implements IJPaintController {
+public class JPaintController implements IJPaintController, IStateListener {
     private final IUiModule uiModule;
     private final IApplicationState applicationState;
     private final PaintCanvas paintCanvas;
@@ -16,6 +19,7 @@ public class JPaintController implements IJPaintController {
         this.uiModule = uiModule;
         this.applicationState = applicationState;
         this.paintCanvas = (PaintCanvas) ((Gui) uiModule).getCanvas();
+        ((ApplicationState) applicationState).setStateListener(this);
         setupEvents();
     }
 
@@ -53,5 +57,10 @@ public class JPaintController implements IJPaintController {
     }
 
     private void ungroup() {
+    }
+
+    @Override
+    public void onStateChanged(State state) {
+        paintCanvas.setState(state);
     }
 }
