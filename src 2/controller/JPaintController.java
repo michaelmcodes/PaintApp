@@ -1,16 +1,21 @@
 package controller;
 
 import model.interfaces.IApplicationState;
+import model.persistence.ApplicationState;
 import view.EventName;
+import view.gui.Gui;
+import view.gui.PaintCanvas;
 import view.interfaces.IUiModule;
 
 public class JPaintController implements IJPaintController {
     private final IUiModule uiModule;
     private final IApplicationState applicationState;
+    private final PaintCanvas paintCanvas;
 
     public JPaintController(IUiModule uiModule, IApplicationState applicationState) {
         this.uiModule = uiModule;
         this.applicationState = applicationState;
+        this.paintCanvas = (PaintCanvas) ((Gui) uiModule).getCanvas();
         setupEvents();
     }
 

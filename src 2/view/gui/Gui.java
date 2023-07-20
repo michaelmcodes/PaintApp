@@ -15,6 +15,11 @@ public class Gui implements IUiModule {
     public Gui(IGuiWindow gui) {
         this.gui = gui;
     }
+
+
+    public JComponent getCanvas() {
+        return ((GuiWindow) gui).getCanvas();
+    }
     
 	@Override
 	public void addEvent(EventName eventName, IEventCallback callback) {
