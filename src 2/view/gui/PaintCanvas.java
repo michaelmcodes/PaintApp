@@ -54,16 +54,8 @@ public class PaintCanvas extends JComponent {
 
         while (shapeIterator.hasNext()) {
             AbstractShape shape = shapeIterator.next();
-            if (shape instanceof Rectangle) {
-                ShapeMakerFacade shapeMakerFacade = new ShapeMakerFacade((Rectangle) shape);
-                shapeMakerFacade.drawRectangle(graphics2d);
-            } else if (shape instanceof Ellipse) {
-                ShapeMakerFacade shapeMakerFacade = new ShapeMakerFacade((Ellipse) shape);
-                shapeMakerFacade.drawEllipse(graphics2d);
-            } else if (shape instanceof Triangle) {
-                ShapeMakerFacade shapeMakerFacade = new ShapeMakerFacade((Triangle) shape);
-                shapeMakerFacade.drawTriangle(graphics2d);
-            }
+            ShapeMakerFacade shapeMakerFacade = new ShapeMakerFacade(shape);
+            shapeMakerFacade.drawShape(graphics2d);
         }
 
     }

@@ -3,27 +3,22 @@ package model.shape;
 import java.awt.*;
 
 public class ShapeMakerFacade {
-    private Rectangle rectangle;
-    private Triangle triangle;
-    private Ellipse ellipse;
+    private final AbstractShape shape;
 
-    public ShapeMakerFacade(Rectangle rectangle) {
-        this.rectangle = rectangle;
-    }
-    public ShapeMakerFacade(Triangle triangle) {
-        this.triangle = triangle;
-    }
-    public ShapeMakerFacade(Ellipse ellipse) {
-        this.ellipse = ellipse;
+    public ShapeMakerFacade(AbstractShape shape) {
+        this.shape = shape;
     }
 
-    public void drawRectangle(Graphics2D graphics2D) {
-        rectangle.draw(graphics2D);
-    }
-    public void drawTriangle(Graphics2D graphics2D) {
-        triangle.draw(graphics2D);
-    }
-    public void drawEllipse(Graphics2D graphics2D) {
-        ellipse.draw(graphics2D);
+    public void drawShape(Graphics2D graphics2D) {
+        if (shape instanceof Rectangle) {
+            Rectangle rectangle = (Rectangle) shape;
+            rectangle.draw(graphics2D);
+        } else if (shape instanceof Ellipse) {
+            Ellipse ellipse = (Ellipse) shape;
+            ellipse.draw(graphics2D);
+        } else if (shape instanceof Triangle) {
+            Triangle triangle = (Triangle) shape;
+            triangle.draw(graphics2D);
+        }
     }
 }
