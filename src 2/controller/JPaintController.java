@@ -127,6 +127,13 @@ public class JPaintController implements IJPaintController, IStateListener {
     }
 
     private void paste() {
+        if (paintCanvas.copiedShapes.isEmpty())
+            return;
+        for (AbstractShape shape : paintCanvas.copiedShapes) {
+            paintCanvas.shapes.add(shape);
+            paintCanvas.actions.add(new DrawAction(shape));
+        }
+        paintCanvas.repaint();
     }
 
     private void delete() {
