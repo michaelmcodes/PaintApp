@@ -5,7 +5,7 @@ import model.ShapeShadingType;
 
 import java.awt.*;
 
-public abstract class AbstractShape {
+public abstract class AbstractShape implements Cloneable {
 
     private Point startPoint;
     private Point endPoint;
@@ -78,4 +78,13 @@ public abstract class AbstractShape {
 
     public abstract void draw(Graphics2D graphics2D);
     public abstract boolean select(Point selectedPoint);
+
+    @Override
+    public AbstractShape clone() {
+        try {
+            return (AbstractShape) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }
