@@ -27,6 +27,7 @@ public class PaintCanvas extends JComponent {
     private final ShapeCreator shapeCreator = new ShapeCreator();
 
     public ArrayList<AbstractShape> shapes = new ArrayList<>();
+    public ArrayList<AbstractShape> copiedShapes = new ArrayList<>();
 
     public ArrayList<Action> undoneActions = new ArrayList<>();
     public ArrayList<Action> actions = new ArrayList<>();

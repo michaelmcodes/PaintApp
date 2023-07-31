@@ -113,6 +113,17 @@ public class JPaintController implements IJPaintController, IStateListener {
     }
 
     private void copy() {
+        paintCanvas.copiedShapes.clear();
+        for (AbstractShape shape : paintCanvas.shapes) {
+            if (shape.isSelected) {
+                AbstractShape newShape = shape.clone();
+                Point startPoint = newShape.getStartPoint();
+                newShape.setSelected(false);
+                newShape.setStartPoint(new Point(600, 400));
+                newShape.setEndPoint(new Point(newShape.getEndPoint().x - startPoint.x + 600, newShape.getEndPoint().y - startPoint.y + 400));
+                paintCanvas.copiedShapes.add(newShape);
+            }
+        }
     }
 
     private void paste() {
