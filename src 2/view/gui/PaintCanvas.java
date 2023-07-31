@@ -2,23 +2,17 @@ package view.gui;
 
 import model.MouseMode;
 import model.ShapeCreator;
-import model.ShapeType;
 import model.State;
 import model.action.Action;
 import model.action.DrawAction;
 import model.action.MoveAction;
 import model.shape.*;
-import model.shape.Rectangle;
 import util.Util;
 import view.handler.MouseListenerHandler;
 import view.handler.MouseMotionListenerHandler;
 
 import javax.swing.JComponent;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -29,7 +23,7 @@ public class PaintCanvas extends JComponent {
     public ArrayList<AbstractShape> shapes = new ArrayList<>();
     public ArrayList<AbstractShape> copiedShapes = new ArrayList<>();
 
-    public ArrayList<Action> undoneActions = new ArrayList<>();
+    public ArrayList<Action> redoActions = new ArrayList<>();
     public ArrayList<Action> actions = new ArrayList<>();
 
     private final ArrayList<AbstractShape> tempMovedShapesArraylist = new ArrayList<>();
@@ -79,7 +73,7 @@ public class PaintCanvas extends JComponent {
         for (AbstractShape shape : shapes) {
             shape.setSelected(false);
         }
-        for (Action action : undoneActions) {
+        for (Action action : redoActions) {
             switch (action.getActionName()) {
                 case DRAW:
                     DrawAction drawAction = (DrawAction) action;

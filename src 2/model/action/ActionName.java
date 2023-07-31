@@ -1,5 +1,5 @@
 package model.action;
 
 public enum ActionName {
-    DRAW, MOVE
+    DRAW, MOVE, DELETE
 }
