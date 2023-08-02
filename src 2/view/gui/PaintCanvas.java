@@ -1,20 +1,11 @@
 package view.gui;
 
 import model.DrawingModel;
-import model.MouseMode;
-import model.ShapeCreator;
-import model.State;
-import model.action.Action;
-import model.action.DrawAction;
-import model.action.MoveAction;
-import model.shape.*;
-import util.Util;
-import view.handler.MouseListenerHandler;
-import view.handler.MouseMotionListenerHandler;
+import model.shape.AbstractShape;
+import model.shape.ShapeMakerFacade;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 public class PaintCanvas extends JComponent {

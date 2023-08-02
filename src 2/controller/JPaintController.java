@@ -5,10 +5,6 @@ import model.DrawingModel;
 import model.MouseMode;
 import model.ShapeCreator;
 import model.State;
-import model.action.Action;
-import model.action.DeleteAction;
-import model.action.DrawAction;
-import model.action.MoveAction;
 import model.interfaces.IApplicationState;
 import model.interfaces.IStateListener;
 import model.persistence.ApplicationState;
@@ -23,7 +19,6 @@ import view.interfaces.IUiModule;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Stack;
 
 public class JPaintController implements IJPaintController, IStateListener {
@@ -38,8 +33,6 @@ public class JPaintController implements IJPaintController, IStateListener {
     private final ShapeCreator shapeCreator = new ShapeCreator();
 
     public ArrayList<AbstractShape> copiedShapes = new ArrayList<>();
-
-    public ArrayList<Action> actions = new ArrayList<>();
 
     private State state = Util.getDefaultState();
     private Point currentMousePressedPoint;
