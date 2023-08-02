@@ -35,6 +35,8 @@ public abstract class AbstractShape implements Cloneable {
         isSelected = selected;
     }
 
+    public boolean isSelected() { return isSelected; }
+
     public void setShapeShadingType(ShapeShadingType shapeShadingType) {
         this.shapeShadingType = shapeShadingType;
     }

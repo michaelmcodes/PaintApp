@@ -1,5 +1,9 @@
 package controller;
 
+import commands.*;
+import model.DrawingModel;
+import model.MouseMode;
+import model.ShapeCreator;
 import model.State;
 import model.action.Action;
 import model.action.DeleteAction;
@@ -9,26 +13,45 @@ import model.interfaces.IApplicationState;
 import model.interfaces.IStateListener;
 import model.persistence.ApplicationState;
 import model.shape.AbstractShape;
+import util.Util;
 import view.EventName;
 import view.gui.Gui;
 import view.gui.PaintCanvas;
+import view.handler.MouseListenerHandler;
+import view.handler.MouseMotionListenerHandler;
 import view.interfaces.IUiModule;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Stack;
 
 public class JPaintController implements IJPaintController, IStateListener {
     private final IUiModule uiModule;
     private final IApplicationState applicationState;
     private final PaintCanvas paintCanvas;
 
-    public JPaintController(IUiModule uiModule, IApplicationState applicationState) {
+    private final DrawingModel model;
+    private final Stack<Command> commands = new Stack<>();
+    private final Stack<Command> undoCommands = new Stack<>();
+
+    private final ShapeCreator shapeCreator = new ShapeCreator();
+
+    public ArrayList<AbstractShape> copiedShapes = new ArrayList<>();
+
+    public ArrayList<Action> actions = new ArrayList<>();
+
+    private State state = Util.getDefaultState();
+    private Point currentMousePressedPoint;
+
+    public JPaintController(IUiModule uiModule, IApplicationState applicationState, DrawingModel model) {
         this.uiModule = uiModule;
         this.applicationState = applicationState;
         this.paintCanvas = (PaintCanvas) ((Gui) uiModule).getCanvas();
         ((ApplicationState) applicationState).setStateListener(this);
+        this.model = model;
         setupEvents();
+        setMouseHandlers();
     }
 
     private void setupEvents() {
@@ -46,127 +69,81 @@ public class JPaintController implements IJPaintController, IStateListener {
         uiModule.addEvent(EventName.UNGROUP, this::ungroup);
     }
 
+    private void setMouseHandlers() {
+        paintCanvas.addMouseListener(new MouseListenerHandler(this));
+        paintCanvas.addMouseMotionListener(new MouseMotionListenerHandler(this));
+    }
+
+    private void executeCommand(Command command, boolean shouldAddToCommands) {
+        command.execute();
+        if (shouldAddToCommands)
+            commands.push(command);
+
+        paintCanvas.repaint();
+    }
+
     private void undo() {
-        if (paintCanvas.actions.isEmpty()) {
-            return;
-        }
-        Action action = paintCanvas.actions.get(paintCanvas.actions.size() - 1);
-        switch (action.getActionName()) {
-            case DRAW: {
-                DrawAction drawAction = (DrawAction) action;
-                AbstractShape shape = drawAction.getDrawnShape();
-                paintCanvas.actions.remove(action);
-                paintCanvas.shapes.remove(shape);
-                paintCanvas.redoActions.add(action);
-                break;
+
+        if (commands.empty()) return;
+
+        if ((commands.peek() instanceof CmdEmpty)) {
+            undoCommands.push(commands.pop());
+            undo();
+        } else if ((commands.peek() instanceof CmdMoveShape)) {
+            while (commands.peek() instanceof CmdMoveShape) {
+                commands.peek().unexecute();
+                undoCommands.push(commands.pop());
             }
-            case MOVE: {
-                MoveAction moveAction = (MoveAction) action;
-                for (AbstractShape movedShape : moveAction.getMovedShapes()) {
-                    paintCanvas.shapes.remove(movedShape);
-                    Point startingPoint = movedShape.getStartPoint();
-                    Point endingPoint = movedShape.getEndPoint();
-                    Point newStartPoint = new Point(startingPoint.x - moveAction.getMovedPoint().x, startingPoint.y - moveAction.getMovedPoint().y);
-                    Point newEndPoint = new Point(endingPoint.x - moveAction.getMovedPoint().x, endingPoint.y - moveAction.getMovedPoint().y);
-                    movedShape.setStartPoint(newStartPoint);
-                    movedShape.setEndPoint(newEndPoint);
-                    paintCanvas.shapes.add(movedShape);
-                }
-                paintCanvas.actions.remove(action);
-                paintCanvas.redoActions.add(action);
-                break;
-            }
-            case DELETE: {
-                DeleteAction deleteAction = (DeleteAction) action;
-                paintCanvas.shapes.addAll(deleteAction.getDeletedShapes());
-                paintCanvas.actions.remove(action);
-                paintCanvas.redoActions.add(action);
-                break;
-            }
+        } else {
+            commands.peek().unexecute();
+            undoCommands.push(commands.pop());
         }
         paintCanvas.repaint();
 
     }
 
     private void redo() {
-        if (paintCanvas.redoActions.isEmpty()) {
-            return;
-        }
-        Action action = paintCanvas.redoActions.get(paintCanvas.redoActions.size() - 1);
-        switch (action.getActionName()) {
-            case DRAW: {
-                DrawAction drawAction = (DrawAction) action;
-                AbstractShape shape = drawAction.getDrawnShape();
-                paintCanvas.shapes.add(shape);
-                paintCanvas.redoActions.remove(action);
-                paintCanvas.actions.add(action);
-                break;
+
+        if (undoCommands.empty()) return;
+
+        if ((undoCommands.peek() instanceof CmdEmpty)) {
+            commands.push(undoCommands.pop());
+            redo();
+        } else if ((undoCommands.peek() instanceof CmdMoveShape)) {
+            while (undoCommands.peek() instanceof CmdMoveShape) {
+                undoCommands.peek().execute();
+                commands.push(undoCommands.pop());
             }
-            case MOVE: {
-                MoveAction moveAction = (MoveAction) action;
-                for (AbstractShape movedShape : moveAction.getMovedShapes()) {
-                    paintCanvas.shapes.remove(movedShape);
-                    Point startingPoint = movedShape.getStartPoint();
-                    Point endingPoint = movedShape.getEndPoint();
-                    Point newStartPoint = new Point(startingPoint.x + moveAction.getMovedPoint().x, startingPoint.y + moveAction.getMovedPoint().y);
-                    Point newEndPoint = new Point(endingPoint.x + moveAction.getMovedPoint().x, endingPoint.y + moveAction.getMovedPoint().y);
-                    movedShape.setStartPoint(newStartPoint);
-                    movedShape.setEndPoint(newEndPoint);
-                    paintCanvas.shapes.add(movedShape);
-                }
-                paintCanvas.redoActions.remove(action);
-                paintCanvas.actions.add(action);
-                break;
-            }
-            case DELETE: {
-                DeleteAction deleteAction = (DeleteAction) action;
-                for (AbstractShape movedShape : deleteAction.getDeletedShapes()) {
-                    paintCanvas.shapes.remove(movedShape);
-                }
-                paintCanvas.actions.add(action);
-                paintCanvas.redoActions.remove(action);
-                break;
-            }
+        } else {
+            undoCommands.peek().execute();
+            commands.push(undoCommands.pop());
         }
         paintCanvas.repaint();
     }
 
     private void copy() {
-        paintCanvas.copiedShapes.clear();
-        for (AbstractShape shape : paintCanvas.shapes) {
+        copiedShapes.clear();
+        for (AbstractShape shape : model.getAll()) {
             if (shape.isSelected) {
                 AbstractShape newShape = shape.clone();
                 Point startPoint = newShape.getStartPoint();
                 newShape.setSelected(false);
                 newShape.setStartPoint(new Point(600, 400));
                 newShape.setEndPoint(new Point(newShape.getEndPoint().x - startPoint.x + 600, newShape.getEndPoint().y - startPoint.y + 400));
-                paintCanvas.copiedShapes.add(newShape);
+                copiedShapes.add(newShape);
             }
         }
     }
 
     private void paste() {
-        if (paintCanvas.copiedShapes.isEmpty())
+        if (copiedShapes.isEmpty())
             return;
-        for (AbstractShape shape : paintCanvas.copiedShapes) {
-            paintCanvas.shapes.add(shape);
-            paintCanvas.actions.add(new DrawAction(shape));
-        }
+        executeCommand(new CmdPasteShape(model, copiedShapes), true);
         paintCanvas.repaint();
     }
 
     private void delete() {
-        ArrayList<AbstractShape> deletedShapes = new ArrayList<>();
-        Iterator<AbstractShape> shapeIterator = paintCanvas.shapes.iterator();
-        while (shapeIterator.hasNext()) {
-            AbstractShape shape = shapeIterator.next();
-            if (shape.isSelected) {
-                deletedShapes.add(shape);
-                shapeIterator.remove();
-            }
-        }
-        paintCanvas.actions.add(new DeleteAction(deletedShapes));
-
+        executeCommand(new CmdDeleteShape(model, getSelectedShapes()), true);
         paintCanvas.repaint();
     }
 
@@ -176,8 +153,97 @@ public class JPaintController implements IJPaintController, IStateListener {
     private void ungroup() {
     }
 
+    private void setSelectedShapes(Point selectedPoint, boolean isDragging) {
+        boolean isAnyShapeSelected = false;
+        for (AbstractShape shape : model.getAll()) {
+            if (shape.select(selectedPoint)) {
+                executeCommand(new CmdSelectShape(shape, true), false);
+                isAnyShapeSelected = true;
+            }
+        }
+        if (!isDragging)
+            if (!isAnyShapeSelected) {
+                unselectAllTheShapes();
+            }
+    }
+
+    private void unselectAllTheShapes() {
+        for (AbstractShape shape : model.getAll()) {
+            executeCommand(new CmdSelectShape(shape, false), false);
+        }
+    }
+
+    private ArrayList<AbstractShape> getSelectedShapes() {
+        ArrayList<AbstractShape> shapes = new ArrayList<>();
+        for (AbstractShape shape : model.getAll()) {
+            if (shape.isSelected()) shapes.add(shape);
+        }
+        return shapes;
+    }
+
+    private void moveSelectedShapes(int differenceInX, int differenceInY) {
+        for (AbstractShape shape : model.getAll()) {
+            if (shape.isSelected) {
+                executeCommand(new CmdMoveShape(shape, new Point(differenceInX, differenceInY)), true);
+            }
+        }
+
+    }
+
+    public void handleMouseReleased(Point point) {
+        if (state.getMouseMode() == MouseMode.MOVE) {
+            commands.add(new CmdEmpty());
+        }
+    }
+
+    public void handleMousePressed(Point point) {
+        switch (state.getMouseMode()) {
+            case DRAW: {
+                unselectAllTheShapes();
+                AbstractShape shape = shapeCreator.createShape(state.getShapeType(), point, point, state.getShapePrimaryColor(), state.getShapeSecondaryColor(), state.getShapeShadingType(), false);
+                executeCommand(new CmdAddShape(model, shape), true);
+                break;
+            }
+            case SELECT: {
+                setSelectedShapes(point, false);
+                break;
+            }
+            case MOVE: {
+                currentMousePressedPoint = point;
+                break;
+            }
+
+
+        }
+        paintCanvas.repaint();
+    }
+
+    public void handleMouseDragged(Point point) {
+        switch (state.getMouseMode()) {
+            case DRAW: {
+                AbstractShape newShape = model.getLatest().clone();
+                newShape.setEndPoint(point);
+                executeCommand(new CmdUpdateShape(model.getLatest(), newShape), false);
+                break;
+            }
+            case SELECT: {
+                setSelectedShapes(point, true);
+                break;
+            }
+            case MOVE: {
+                int movingShapeDifferenceX = point.x - currentMousePressedPoint.x;
+                int movingShapeDifferenceY = point.y - currentMousePressedPoint.y;
+                moveSelectedShapes(movingShapeDifferenceX, movingShapeDifferenceY);
+                currentMousePressedPoint = point;
+                break;
+            }
+        }
+        paintCanvas.repaint();
+    }
+
+
     @Override
     public void onStateChanged(State state) {
-        paintCanvas.setState(state);
+        this.state = state;
     }
 }

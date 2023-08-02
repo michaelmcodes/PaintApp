@@ -1,5 +1,6 @@
 package view.handler;
 
+import controller.JPaintController;
 import view.gui.PaintCanvas;
 
 import java.awt.*;
@@ -9,9 +10,9 @@ import java.awt.event.MouseMotionListener;
 
 public class MouseListenerHandler implements MouseListener {
 
-    private final PaintCanvas paintCanvas;
-    public MouseListenerHandler(PaintCanvas paintCanvas) {
-        this.paintCanvas = paintCanvas;
+    private final JPaintController controller;
+    public MouseListenerHandler(JPaintController controller) {
+        this.controller = controller;
     }
 
     @Override
@@ -23,14 +24,14 @@ public class MouseListenerHandler implements MouseListener {
     public void mousePressed(MouseEvent mouseEvent) {
         Point point = new Point();
         point.setLocation(mouseEvent.getX(), mouseEvent.getY());
-        paintCanvas.handleMousePressed(point);
+        controller.handleMousePressed(point);
     }
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
         Point point = new Point();
         point.setLocation(mouseEvent.getX(), mouseEvent.getY());
-        paintCanvas.handleMouseReleased(point);
+        controller.handleMouseReleased(point);
 
     }
 
