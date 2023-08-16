@@ -1,35 +1,42 @@
 package model;
 
 import model.shape.AbstractShape;
+import model.shape.CompoundShape;
+import model.shape.Shape;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class DrawingModel {
 
-    private ArrayList<AbstractShape> shapes = new ArrayList<>();
+    private final CompoundShape compoundShape = new CompoundShape();
 
-    public ArrayList<AbstractShape> getAll() {
-        return shapes;
+    public ArrayList<Shape> getAll() {
+        return compoundShape.getAll();
     }
 
-    public AbstractShape getLatest() {
-        return shapes.get(shapes.size() - 1);
+    public Shape getLatest() {
+        return compoundShape.getLatest();
     }
 
-    public void add(AbstractShape shape) {
-        shapes.add(shape);
+    public void draw(Graphics2D graphics2D) {
+        compoundShape.draw(graphics2D);
     }
 
-    public void addMultiple(ArrayList<AbstractShape> newShapes) {
-        shapes.addAll(newShapes);
+    public void add(Shape shape) {
+        compoundShape.add(shape);
     }
 
-    public void remove(AbstractShape shape) {
-        shapes.remove(shape);
+    public void addMultiple(ArrayList<Shape> newShapes) {
+        compoundShape.addMultiple(newShapes);
     }
 
-    public void removeMultiple(ArrayList<AbstractShape> newShapes) {
-        this.shapes.removeAll(newShapes);
+    public void remove(Shape shape) {
+        compoundShape.remove(shape);
+    }
+
+    public void removeMultiple(ArrayList<Shape> newShapes) {
+        compoundShape.removeMultiple(newShapes);
     }
 
 }

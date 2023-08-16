@@ -9,6 +9,7 @@ import model.interfaces.IApplicationState;
 import model.interfaces.IStateListener;
 import model.persistence.ApplicationState;
 import model.shape.AbstractShape;
+import model.shape.Shape;
 import util.Util;
 import view.EventName;
 import view.gui.Gui;
@@ -19,6 +20,7 @@ import view.interfaces.IUiModule;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Stack;
 
 public class JPaintController implements IJPaintController, IStateListener {
@@ -32,7 +34,7 @@ public class JPaintController implements IJPaintController, IStateListener {
 
     private final ShapeCreator shapeCreator = new ShapeCreator();
 
-    public ArrayList<AbstractShape> copiedShapes = new ArrayList<>();
+    public ArrayList<Shape> copiedShapes = new ArrayList<>();
 
     private State state = Util.getDefaultState();
     private Point currentMousePressedPoint;
@@ -116,9 +118,9 @@ public class JPaintController implements IJPaintController, IStateListener {
 
     private void copy() {
         copiedShapes.clear();
-        for (AbstractShape shape : model.getAll()) {
-            if (shape.isSelected) {
-                AbstractShape newShape = shape.clone();
+        for (Shape shape : model.getAll()) {
+            if (shape.isSelected()) {
+                AbstractShape newShape = ((AbstractShape) shape).clone();
                 Point startPoint = newShape.getStartPoint();
                 newShape.setSelected(false);
                 newShape.setStartPoint(new Point(600, 400));
@@ -148,7 +150,7 @@ public class JPaintController implements IJPaintController, IStateListener {
 
     private void setSelectedShapes(Point selectedPoint, boolean isDragging) {
         boolean isAnyShapeSelected = false;
-        for (AbstractShape shape : model.getAll()) {
+        for (Shape shape : model.getAll()) {
             if (shape.select(selectedPoint)) {
                 executeCommand(new CmdSelectShape(shape, true), false);
                 isAnyShapeSelected = true;
@@ -161,22 +163,22 @@ public class JPaintController implements IJPaintController, IStateListener {
     }
 
     private void unselectAllTheShapes() {
-        for (AbstractShape shape : model.getAll()) {
+        for (Shape shape : model.getAll()) {
             executeCommand(new CmdSelectShape(shape, false), false);
         }
     }
 
-    private ArrayList<AbstractShape> getSelectedShapes() {
-        ArrayList<AbstractShape> shapes = new ArrayList<>();
-        for (AbstractShape shape : model.getAll()) {
+    private ArrayList<Shape> getSelectedShapes() {
+        ArrayList<Shape> shapes = new ArrayList<>();
+        for (Shape shape : model.getAll()) {
             if (shape.isSelected()) shapes.add(shape);
         }
         return shapes;
     }
 
     private void moveSelectedShapes(int differenceInX, int differenceInY) {
-        for (AbstractShape shape : model.getAll()) {
-            if (shape.isSelected) {
+        for (Shape shape : model.getAll()) {
+            if (shape.isSelected()) {
                 executeCommand(new CmdMoveShape(shape, new Point(differenceInX, differenceInY)), true);
             }
         }
@@ -214,7 +216,7 @@ public class JPaintController implements IJPaintController, IStateListener {
     public void handleMouseDragged(Point point) {
         switch (state.getMouseMode()) {
             case DRAW: {
-                AbstractShape newShape = model.getLatest().clone();
+                AbstractShape newShape = ((AbstractShape) model.getLatest()).clone();
                 newShape.setEndPoint(point);
                 executeCommand(new CmdUpdateShape(model.getLatest(), newShape), false);
                 break;

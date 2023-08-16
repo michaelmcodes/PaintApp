@@ -1,23 +1,24 @@
 package commands;
 
 import model.shape.AbstractShape;
+import model.shape.Shape;
 
 import java.awt.*;
 
 public class CmdMoveShape implements Command {
 
-    private AbstractShape oldState;
-    private AbstractShape originalState;
+    private Shape oldState;
+    private Shape originalState;
     private Point diffPoint;
 
-    public CmdMoveShape(AbstractShape oldState, Point diffPoint) {
+    public CmdMoveShape(Shape oldState, Point diffPoint) {
         this.oldState = oldState;
         this.diffPoint = diffPoint;
     }
 
     @Override
     public void execute() {
-        originalState = oldState.clone();
+        originalState = ((AbstractShape) oldState).clone();
         oldState.move(diffPoint);
     }
 

@@ -1,13 +1,15 @@
 package commands;
 
+import model.DrawingModel;
 import model.shape.AbstractShape;
+import model.shape.Shape;
 
 public class CmdSelectShape implements Command {
 
-    private AbstractShape shape;
+    private Shape shape;
     private boolean selectedState;
 
-    public CmdSelectShape(AbstractShape shape, boolean selectedState) {
+    public CmdSelectShape(Shape shape, boolean selectedState) {
         this.shape = shape;
         this.selectedState = selectedState;
     }
