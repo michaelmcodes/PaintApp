@@ -9,8 +9,8 @@ import java.awt.*;
 
 public class Triangle extends AbstractShape {
 
-    public Triangle(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType, boolean isSelected) {
-        super(startPoint, endPoint, backgroundColor, strokeColor, shapeShadingType, isSelected);
+    public Triangle(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType) {
+        super(startPoint, endPoint, backgroundColor, strokeColor, shapeShadingType);
     }
 
     private Polygon selectedTriangleStrokePolygon(Graphics2D g) {

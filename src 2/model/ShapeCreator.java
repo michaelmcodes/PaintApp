@@ -5,7 +5,7 @@ import model.shape.*;
 import java.awt.*;
 
 public class ShapeCreator {
-    public AbstractShape createShape(ShapeType shapeType, Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType, boolean isSelected) {
+    public AbstractShape createShape(ShapeType shapeType, Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType) {
         AbstractShapeFactory abstractShapeFactory = null;
         switch (shapeType) {
             case TRIANGLE: {
@@ -21,7 +21,7 @@ public class ShapeCreator {
                 break;
             }
         }
-        return abstractShapeFactory.create(startPoint, endPoint, backgroundColor, strokeColor, shapeShadingType, isSelected);
+        return abstractShapeFactory.create(startPoint, endPoint, backgroundColor, strokeColor, shapeShadingType);
 
     }
 }

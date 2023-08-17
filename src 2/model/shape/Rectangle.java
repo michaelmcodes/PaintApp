@@ -9,8 +9,8 @@ import java.awt.*;
 
 public class Rectangle extends AbstractShape {
 
-    public Rectangle(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType, boolean isSelected) {
-        super(startPoint, endPoint, backgroundColor, strokeColor, shapeShadingType, isSelected);
+    public Rectangle(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType) {
+        super(startPoint, endPoint, backgroundColor, strokeColor, shapeShadingType);
     }
 
     @Override

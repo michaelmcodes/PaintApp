@@ -195,7 +195,7 @@ public class JPaintController implements IJPaintController, IStateListener {
         switch (state.getMouseMode()) {
             case DRAW: {
                 unselectAllTheShapes();
-                AbstractShape shape = shapeCreator.createShape(state.getShapeType(), point, point, state.getShapePrimaryColor(), state.getShapeSecondaryColor(), state.getShapeShadingType(), false);
+                AbstractShape shape = shapeCreator.createShape(state.getShapeType(), point, point, state.getShapePrimaryColor(), state.getShapeSecondaryColor(), state.getShapeShadingType());
                 executeCommand(new CmdAddShape(model, shape), true);
                 break;
             }

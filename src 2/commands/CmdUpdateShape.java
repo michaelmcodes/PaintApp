@@ -3,9 +3,6 @@ package commands;
 import model.shape.AbstractShape;
 import model.shape.Shape;
 
-/**
- * Class that represent command for update existing rectangle from the draw.
- */
 public class CmdUpdateShape implements Command {
 	private Shape oldState;
 	private Shape newState;

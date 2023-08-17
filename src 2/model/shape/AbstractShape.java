@@ -16,13 +16,12 @@ public abstract class AbstractShape implements Shape, Cloneable {
     private ShapeShadingType shapeShadingType;
     public boolean isSelected;
 
-    public AbstractShape(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType, boolean isSelected) {
+    public AbstractShape(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType) {
         this.startPoint = startPoint;
         this.endPoint = endPoint;
         this.backgroundColor = backgroundColor;
         this.strokeColor = strokeColor;
         this.shapeShadingType = shapeShadingType;
-        this.isSelected = isSelected;
     }
 
     public AbstractShape() {}
