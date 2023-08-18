@@ -20,7 +20,6 @@ import view.interfaces.IUiModule;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Stack;
 
 public class JPaintController implements IJPaintController, IStateListener {
@@ -45,6 +44,11 @@ public class JPaintController implements IJPaintController, IStateListener {
         this.paintCanvas = (PaintCanvas) ((Gui) uiModule).getCanvas();
         ((ApplicationState) applicationState).setStateListener(this);
         this.model = model;
+        setup();
+    }
+
+    @Override
+    public void setup() {
         setupEvents();
         setMouseHandlers();
     }
@@ -118,15 +122,12 @@ public class JPaintController implements IJPaintController, IStateListener {
 
     private void copy() {
         copiedShapes.clear();
-        for (Shape shape : model.getAll()) {
-            if (shape.isSelected()) {
-                AbstractShape newShape = ((AbstractShape) shape).clone();
-                Point startPoint = newShape.getStartPoint();
-                newShape.setSelected(false);
-                newShape.setStartPoint(new Point(600, 400));
-                newShape.setEndPoint(new Point(newShape.getEndPoint().x - startPoint.x + 600, newShape.getEndPoint().y - startPoint.y + 400));
-                copiedShapes.add(newShape);
-            }
+        for (Shape shape : getSelectedShapes()) {
+            AbstractShape newShape = ((AbstractShape) shape).clone();
+            newShape.setSelected(false);
+            newShape.copy();
+            copiedShapes.add(newShape);
+
         }
     }
 

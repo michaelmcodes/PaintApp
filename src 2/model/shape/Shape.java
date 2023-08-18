@@ -16,6 +16,7 @@ public interface Shape {
     ShapeShadingType getShapeShadingType();
     ShapeColor getBackgroundColor();
     ShapeColor getStrokeColor();
+    void copy();
     void move(Point movedPoint);
     void draw(Graphics2D graphics2D);
     boolean select(Point selectedPoint);

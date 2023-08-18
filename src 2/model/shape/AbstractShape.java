@@ -1,6 +1,7 @@
 package model.shape;
 
 import model.ShapeColor;
+import model.ShapeCreator;
 import model.ShapeShadingType;
 import util.Constants;
 import util.Util;
@@ -14,7 +15,7 @@ public abstract class AbstractShape implements Shape, Cloneable {
     private ShapeColor backgroundColor = Util.getDefaultState().getShapePrimaryColor();
     private ShapeColor strokeColor = Util.getDefaultState().getShapeSecondaryColor();
     private ShapeShadingType shapeShadingType;
-    public boolean isSelected;
+    public boolean isSelected = false;
 
     public AbstractShape(Point startPoint, Point endPoint, ShapeColor backgroundColor, ShapeColor strokeColor, ShapeShadingType shapeShadingType) {
         this.startPoint = startPoint;
@@ -82,6 +83,12 @@ public abstract class AbstractShape implements Shape, Cloneable {
         Point newEndPoint = new Point(endingPoint.x + movedPoint.x, endingPoint.y + movedPoint.y);
         setStartPoint(newStartPoint);
         setEndPoint(newEndPoint);
+    }
+
+    @Override
+    public void copy() {
+        setStartPoint(new Point(getStartPoint().x + Constants.COPIED_SHAPE_EXTRA_SHIFT, getStartPoint().y + Constants.COPIED_SHAPE_EXTRA_SHIFT));
+        setEndPoint(new Point(getEndPoint().x + Constants.COPIED_SHAPE_EXTRA_SHIFT, getEndPoint().y + Constants.COPIED_SHAPE_EXTRA_SHIFT));
     }
 
     @Override

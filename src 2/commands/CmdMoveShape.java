@@ -1,6 +1,7 @@
 package commands;
 
 import model.shape.AbstractShape;
+import model.shape.GroupShape;
 import model.shape.Shape;
 
 import java.awt.*;
@@ -8,7 +9,6 @@ import java.awt.*;
 public class CmdMoveShape implements Command {
 
     private Shape oldState;
-    private Shape originalState;
     private Point diffPoint;
 
     public CmdMoveShape(Shape oldState, Point diffPoint) {
@@ -18,13 +18,11 @@ public class CmdMoveShape implements Command {
 
     @Override
     public void execute() {
-        originalState = ((AbstractShape) oldState).clone();
         oldState.move(diffPoint);
     }
 
     @Override
     public void unexecute() {
-        oldState.setStartPoint(originalState.getStartPoint());
-        oldState.setEndPoint(originalState.getEndPoint());
+        oldState.move(new Point(-diffPoint.x, -diffPoint.y));
     }
 }

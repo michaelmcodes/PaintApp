@@ -9,7 +9,7 @@ import java.util.Collections;
 
 public class GroupShape extends AbstractShape {
 
-    private ArrayList<Shape> children = new ArrayList<>();
+    private final ArrayList<Shape> children = new ArrayList<>();
 
     public void addChildren(ArrayList<Shape> groupedShapes) {
         if (!children.containsAll(groupedShapes))
@@ -26,10 +26,44 @@ public class GroupShape extends AbstractShape {
     }
 
     @Override
+    public void setStartPoint(Point startPoint) {
+        for (Shape shape : children) {
+            shape.setStartPoint(startPoint);
+        }
+    }
+
+    @Override
+    public void setEndPoint(Point endPoint) {
+        for (Shape shape : children) {
+            shape.setEndPoint(endPoint);
+        }
+    }
+
+    @Override
+    public void copy() {
+        for (Shape child : children) {
+            child.copy();
+        }
+
+    }
+
+    @Override
     public void setSelected(boolean selected) {
         for (Shape shape : children) {
             shape.setSelected(selected);
         }
+    }
+
+    @Override
+    public Point getStartPoint() {
+        java.awt.Shape boundingRect = createBoundingBox();
+        return new Point(boundingRect.getBounds().x, boundingRect.getBounds().y);
+    }
+
+    @Override
+    public Point getEndPoint() {
+        java.awt.Shape boundingRect = createBoundingBox();
+        return new Point(boundingRect.getBounds().x + boundingRect.getBounds().width, boundingRect.getBounds().y + boundingRect.getBounds().height);
     }
 
     @Override
@@ -52,10 +86,21 @@ public class GroupShape extends AbstractShape {
         for (Shape shape : children) {
             shape.draw(graphics2D);
         }
-        drawBoundingRectangle(graphics2D, generateFromList(children));
+        drawBoundingBox(graphics2D, createBoundingBox());
     }
 
-    private void drawBoundingRectangle(Graphics2D g, java.awt.Shape rectangle) {
+    @Override
+    public AbstractShape clone() {
+        ArrayList<Shape> newChildren = new ArrayList<>();
+        for (Shape shape : children) {
+            newChildren.add(((AbstractShape) shape).clone());
+        }
+        GroupShape groupShape = new GroupShape();
+        groupShape.addChildren(newChildren);
+        return groupShape;
+    }
+
+    private void drawBoundingBox(Graphics2D g, java.awt.Shape rectangle) {
         g.setStroke(new BasicStroke(5));
         g.setColor(Util.getColorFromShapeColor(ShapeColor.GREEN));
         g.drawRect(rectangle.getBounds().x, rectangle.getBounds().y, rectangle.getBounds().width, rectangle.getBounds().height);
@@ -64,18 +109,18 @@ public class GroupShape extends AbstractShape {
 
     @Override
     public boolean select(Point selectedPoint) {
-        java.awt.Shape r = generateFromList(children);
+        java.awt.Shape r = createBoundingBox();
         if (r != null) {
             return r.contains(selectedPoint);
         }
         return false;
     }
 
-    public java.awt.Shape generateFromList(ArrayList<Shape> shapeList) {
+    public java.awt.Shape createBoundingBox() {
         ArrayList<Integer> xCoordinates = new ArrayList<>();
         ArrayList<Integer> yCoordinates = new ArrayList<>();
 
-        for (Shape shape : shapeList) {
+        for (Shape shape : children) {
             xCoordinates.add(shape.getStartPoint().x);
             xCoordinates.add(shape.getEndPoint().x);
 
