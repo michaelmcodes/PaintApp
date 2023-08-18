@@ -1,10 +1,7 @@
 package controller;
 
 import commands.*;
-import model.DrawingModel;
-import model.MouseMode;
-import model.ShapeCreator;
-import model.State;
+import model.*;
 import model.interfaces.IApplicationState;
 import model.interfaces.IStateListener;
 import model.persistence.ApplicationState;
@@ -26,6 +23,7 @@ public class JPaintController implements IJPaintController, IStateListener {
     private final IUiModule uiModule;
     private final IApplicationState applicationState;
     private final PaintCanvas paintCanvas;
+    private final PaintObservable observable;
 
     private final DrawingModel model;
     private final Stack<Command> commands = new Stack<>();
@@ -38,12 +36,13 @@ public class JPaintController implements IJPaintController, IStateListener {
     private State state = Util.getDefaultState();
     private Point currentMousePressedPoint;
 
-    public JPaintController(IUiModule uiModule, IApplicationState applicationState, DrawingModel model) {
+    public JPaintController(IUiModule uiModule, IApplicationState applicationState, DrawingModel model, PaintObservable observable) {
         this.uiModule = uiModule;
         this.applicationState = applicationState;
         this.paintCanvas = (PaintCanvas) ((Gui) uiModule).getCanvas();
         ((ApplicationState) applicationState).setStateListener(this);
         this.model = model;
+        this.observable = observable;
         setup();
     }
 
@@ -78,7 +77,7 @@ public class JPaintController implements IJPaintController, IStateListener {
         if (shouldAddToCommands)
             commands.push(command);
 
-        paintCanvas.repaint();
+        observable.notifyUpdate();
     }
 
     private void undo() {
@@ -97,7 +96,7 @@ public class JPaintController implements IJPaintController, IStateListener {
             commands.peek().unexecute();
             undoCommands.push(commands.pop());
         }
-        paintCanvas.repaint();
+        observable.notifyUpdate();
 
     }
 
@@ -117,7 +116,7 @@ public class JPaintController implements IJPaintController, IStateListener {
             undoCommands.peek().execute();
             commands.push(undoCommands.pop());
         }
-        paintCanvas.repaint();
+        observable.notifyUpdate();
     }
 
     private void copy() {
@@ -135,12 +134,12 @@ public class JPaintController implements IJPaintController, IStateListener {
         if (copiedShapes.isEmpty())
             return;
         executeCommand(new CmdPasteShape(model, copiedShapes), true);
-        paintCanvas.repaint();
+        observable.notifyUpdate();
     }
 
     private void delete() {
         executeCommand(new CmdDeleteShape(model, getSelectedShapes()), true);
-        paintCanvas.repaint();
+        observable.notifyUpdate();
     }
 
     private void group() {
@@ -217,7 +216,7 @@ public class JPaintController implements IJPaintController, IStateListener {
 
 
         }
-        paintCanvas.repaint();
+        observable.notifyUpdate();
     }
 
     public void handleMouseDragged(Point point) {
@@ -240,7 +239,7 @@ public class JPaintController implements IJPaintController, IStateListener {
                 break;
             }
         }
-        paintCanvas.repaint();
+        observable.notifyUpdate();
     }
 
 
