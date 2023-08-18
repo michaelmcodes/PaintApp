@@ -143,6 +143,10 @@ public class JPaintController implements IJPaintController, IStateListener {
     }
 
     private void group() {
+        if (getSelectedShapes().size() > 1) {
+            executeCommand(new CmdGroupShape(getSelectedShapes(), model), true);
+            unselectAllTheShapes();
+        }
     }
 
     private void ungroup() {
