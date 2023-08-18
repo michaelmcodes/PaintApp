@@ -150,6 +150,8 @@ public class JPaintController implements IJPaintController, IStateListener {
     }
 
     private void ungroup() {
+        executeCommand(new CmdUngroupShape(getSelectedShapes(), model), true);
+        unselectAllTheShapes();
     }
 
     private void setSelectedShapes(Point selectedPoint, boolean isDragging) {
