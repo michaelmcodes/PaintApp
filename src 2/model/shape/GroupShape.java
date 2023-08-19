@@ -1,6 +1,7 @@
 package model.shape;
 
 import model.ShapeColor;
+import util.Constants;
 import util.Util;
 
 import java.awt.*;
@@ -11,14 +12,18 @@ public class GroupShape extends AbstractShape {
 
     private final ArrayList<Shape> children = new ArrayList<>();
 
+    private boolean isSelected = false;
+
     public void addChildren(ArrayList<Shape> groupedShapes) {
         if (!children.containsAll(groupedShapes))
             children.addAll(groupedShapes);
     }
 
     public void addChild(Shape shape) {
-        if (!children.contains(shape))
+        if (!children.contains(shape)) {
+            shape.setSelected(false);
             children.add(shape);
+        }
 
     }
 
@@ -50,9 +55,7 @@ public class GroupShape extends AbstractShape {
 
     @Override
     public void setSelected(boolean selected) {
-        for (Shape shape : children) {
-            shape.setSelected(selected);
-        }
+        this.isSelected = selected;
     }
 
     @Override
@@ -69,10 +72,7 @@ public class GroupShape extends AbstractShape {
 
     @Override
     public boolean isSelected() {
-        for (Shape shape : children) {
-            return shape.isSelected();
-        }
-        return false;
+        return isSelected;
     }
 
     @Override
@@ -87,7 +87,8 @@ public class GroupShape extends AbstractShape {
         for (Shape shape : children) {
             shape.draw(graphics2D);
         }
-        drawBoundingBox(graphics2D, createBoundingBox());
+        if (isSelected)
+            drawBoundingBox(graphics2D, createBoundingBox());
     }
 
     @Override
@@ -102,9 +103,12 @@ public class GroupShape extends AbstractShape {
     }
 
     private void drawBoundingBox(Graphics2D g, java.awt.Shape rectangle) {
-        g.setStroke(new BasicStroke(5));
-        g.setColor(Util.getColorFromShapeColor(ShapeColor.GREEN));
-        g.drawRect(rectangle.getBounds().x, rectangle.getBounds().y, rectangle.getBounds().width, rectangle.getBounds().height);
+        int padding = Constants.SELECTED_SHAPE_STROKE_PADDING;
+
+        Stroke stroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1, new float[]{9}, 0);
+        g.setStroke(stroke);
+        g.setColor(Constants.SELECTED_SHAPE_STROKE_COLOR);
+        g.drawRect(rectangle.getBounds().x - padding, rectangle.getBounds().y - padding, rectangle.getBounds().width + 2 * padding, rectangle.getBounds().height + 2 * padding);
 
     }
 
