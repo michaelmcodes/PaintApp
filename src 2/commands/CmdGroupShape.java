@@ -17,12 +17,7 @@ public class CmdGroupShape implements Command {
         this.model = model;
 
         for (Shape shape : shapes) {
-            if (shape instanceof GroupShape) {
-                groupShape.addChildren(((GroupShape) shape).getChildren());
-            }
-            else {
-                groupShape.addChild(shape);
-            }
+            groupShape.addChild(shape);
         }
     }
 

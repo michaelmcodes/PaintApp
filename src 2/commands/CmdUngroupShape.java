@@ -24,7 +24,7 @@ public class CmdUngroupShape implements Command {
     @Override
     public void execute() {
         for (Shape groupShape : shapes) {
-            model.addMultiple(((GroupShape)groupShape).getChildren());
+            model.addMultiple(((GroupShape) groupShape).getChildren());
         }
         model.removeMultiple(shapes);
     }
@@ -32,7 +32,7 @@ public class CmdUngroupShape implements Command {
     @Override
     public void unexecute() {
         for (Shape groupShape : shapes) {
-            model.removeMultiple(((GroupShape)groupShape).getChildren());
+            model.removeMultiple(((GroupShape) groupShape).getChildren());
         }
         model.addMultiple(shapes);
     }

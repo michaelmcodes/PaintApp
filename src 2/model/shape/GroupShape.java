@@ -19,6 +19,7 @@ public class GroupShape extends AbstractShape {
     public void addChild(Shape shape) {
         if (!children.contains(shape))
             children.add(shape);
+
     }
 
     public ArrayList<Shape> getChildren() {
